@@ -1,0 +1,31 @@
+Index: 5AI.1.12/mydroid/device/ti/omap5sevm/init.omap5sevmboard.rc
+===================================================================
+--- 5AI.1.12.orig/mydroid/device/ti/omap5sevm/init.omap5sevmboard.rc	2012-07-05 16:19:13.936259937 +0200
++++ 5AI.1.12/mydroid/device/ti/omap5sevm/init.omap5sevmboard.rc	2012-07-05 17:08:55.606401494 +0200
+@@ -28,7 +28,6 @@
+ 
+ on boot
+ 	mount debugfs /sys/kernel/debug /sys/kernel/debug
+-	chmod 0666 /dev/pvrsrvkm
+ 	chmod 0444 /system/usr/keychars/omap4-keypad.kcm.bin
+ 
+ # Power Management
+@@ -50,11 +49,13 @@
+ on fs
+ 	mkdir /factory 0775 radio radio
+ 	symlink /dev/block/platform /dev/block/platform/omap
+-	mount ext4 /dev/block/platform/omap/omap_hsmmc.1/by-name/system /system wait ro
+-	mount ext4 /dev/block/platform/omap/omap_hsmmc.1/by-name/userdata /data wait noatime nosuid nodev nomblk_io_submit
+-	mount ext4 /dev/block/platform/omap/omap_hsmmc.1/by-name/cache /cache wait noatime nosuid nodev nomblk_io_submit
+-	mount ext4 /dev/block/platform/omap/omap_hsmmc.1/by-name/efs /factory wait ro
+-
++	mount ext4 /dev/block/mmcblk1p6 /system wait ro
++	mount ext4 /dev/block/mmcblk1p7 /data wait noatime nosuid nodev nomblk_io_submit
++	mount ext4 /dev/block/mmbclk1p8 /cache wait noatime nosuid nodev nomblk_io_submit
++	mount ext4 /dev/block/mmcblk1p9 /factory wait ro
++        insmod /vendor/lib/modules/pvrsrvkm_sgx544_105.ko
++        insmod /vendor/lib/modules/omaplfb_sgx544_105.ko
++	chmod 0666 /dev/pvrsrvkm
+ 
+ # change permissions for ION driver
+     chmod 0777 /dev/ion

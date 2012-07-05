@@ -1,0 +1,66 @@
+Index: 5AI.1.12/mydroid/frameworks/base/services/surfaceflinger/DisplayHardware/DisplayHardwareBase.cpp
+===================================================================
+--- 5AI.1.12.orig/mydroid/frameworks/base/services/surfaceflinger/DisplayHardware/DisplayHardwareBase.cpp	2012-07-05 12:52:17.839879458 +0200
++++ 5AI.1.12/mydroid/frameworks/base/services/surfaceflinger/DisplayHardware/DisplayHardwareBase.cpp	2012-07-05 12:52:53.342339358 +0200
+@@ -72,6 +72,8 @@
+     int fd;
+ 
+     fd = open(kSleepFileName, O_RDONLY, 0);
++    if (fd == -1 && errno == ENOENT)
++       return true; /* kernel > 3.3 */
+     do {
+       err = read(fd, &buf, 1);
+     } while (err < 0 && errno == EINTR);
+Index: 5AI.1.12/mydroid/external/llvm/lib/Support/Signals.cpp
+===================================================================
+--- 5AI.1.12.orig/mydroid/external/llvm/lib/Support/Signals.cpp	2012-07-05 12:54:58.652895695 +0200
++++ 5AI.1.12/mydroid/external/llvm/lib/Support/Signals.cpp	2012-07-05 12:55:16.936100462 +0200
+@@ -15,6 +15,8 @@
+ #include "llvm/Support/Signals.h"
+ #include "llvm/Config/config.h"
+ 
++#undef HAVE_DLFCN_H
++
+ namespace llvm {
+ using namespace sys;
+ 
+Index: 5AI.1.12/mydroid/external/llvm/lib/Support/Threading.cpp
+===================================================================
+--- 5AI.1.12.orig/mydroid/external/llvm/lib/Support/Threading.cpp	2012-07-05 12:54:23.466425440 +0200
++++ 5AI.1.12/mydroid/external/llvm/lib/Support/Threading.cpp	2012-07-05 12:54:50.637244260 +0200
+@@ -17,6 +17,8 @@
+ #include "llvm/Config/config.h"
+ #include <cassert>
+ 
++#undef LLVM_MULTITHREADED
++
+ using namespace llvm;
+ 
+ static bool multithreaded_mode = false;
+Index: 5AI.1.12/mydroid/external/llvm/lib/Support/Mutex.cpp
+===================================================================
+--- 5AI.1.12.orig/mydroid/external/llvm/lib/Support/Mutex.cpp	2012-07-05 12:55:27.515640189 +0200
++++ 5AI.1.12/mydroid/external/llvm/lib/Support/Mutex.cpp	2012-07-05 12:55:53.842494451 +0200
+@@ -14,6 +14,9 @@
+ #include "llvm/Config/config.h"
+ #include "llvm/Support/Mutex.h"
+ 
++#undef ENABLE_THREADS
++#undef HAVE_PTHREAD_H
++
+ //===----------------------------------------------------------------------===//
+ //=== WARNING: Implementation here must contain only TRULY operating system
+ //===          independent code.
+Index: 5AI.1.12/mydroid/external/llvm/llvm-host-build.mk
+===================================================================
+--- 5AI.1.12.orig/mydroid/external/llvm/llvm-host-build.mk	2012-07-05 14:59:07.640469495 +0200
++++ 5AI.1.12/mydroid/external/llvm/llvm-host-build.mk	2012-07-05 14:59:34.431341258 +0200
+@@ -35,6 +35,8 @@
+ 	-Woverloaded-virtual	\
+ 	-Wno-sign-promo
+ 
++LOCAL_LDLIBS := -lpthread -ldl
++
+ # Make sure bionic is first so we can include system headers.
+ LOCAL_C_INCLUDES :=	\
+ 	$(LLVM_ROOT_PATH)	\
