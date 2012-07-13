@@ -1,0 +1,26 @@
+From e65a47099d0743b68dc64f52f173c4fc69294086 Mon Sep 17 00:00:00 2001
+From: dmitry pervushin <dpervushin@gmail.com>
+Date: Mon, 25 Jun 2012 12:40:23 +0200
+Subject: [PATCH 1/2] Cherry-picked commit from Sebastien Jan <s-jan@ti.com>
+To: c-duclos@ti.com
+
+---
+ drivers/video/omap2/dss/hdmi_panel.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/drivers/video/omap2/dss/hdmi_panel.c b/drivers/video/omap2/dss/hdmi_panel.c
+index 0683401..f6dd443 100644
+--- a/drivers/video/omap2/dss/hdmi_panel.c
++++ b/drivers/video/omap2/dss/hdmi_panel.c
+@@ -118,7 +118,7 @@ static int hdmi_panel_probe(struct omap_dss_device *dssdev)
+ 	if (device_create_file(&dssdev->dev, &dev_attr_range))
+ 		DSSERR("failed to create sysfs file\n");
+ 
+-	dssdev->panel.timings = (struct omap_video_timings){640, 480, 25175, 96, 16, 48, 2 , 11, 31};
++	dssdev->panel.timings = (struct omap_video_timings){1024, 768, 65000, 136, 24, 160, 6, 3, 29};
+ 
+ 	/* sysfs entry to provide user space control to set deepcolor mode */
+ 	if (device_create_file(&dssdev->dev, &dev_attr_deepcolor))
+-- 
+1.7.5.4
+

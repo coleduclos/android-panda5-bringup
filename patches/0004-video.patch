@@ -1,0 +1,99 @@
+diff --git a/arch/arm/mach-omap2/devices.c b/arch/arm/mach-omap2/devices.c
+index a7b35d8..48614c5 100644
+--- a/arch/arm/mach-omap2/devices.c
++++ b/arch/arm/mach-omap2/devices.c
+@@ -1039,7 +1039,7 @@ static void omap_init_gpu(void)
+ 	struct platform_device *od;
+ 	struct gpu_platform_data *pdata;
+ 	const char *oh_name = "gpu";
+-	char *name = "omapdrm_pvr";
++	char *name = "pvrsrvkm";
+ 
+ 	oh = omap_hwmod_lookup(oh_name);
+ 	if (!oh) {
+@@ -1069,6 +1069,19 @@ static void omap_init_gpu(void)
+ 		pr_info("Updated GPU clock source to be dpll_per_m7x2_ck\n");
+ 	}
+ 
++	if (od && cpu_is_omap54xx()) {
++		struct clk *cck, *hck, *pck;
++
++                cck = clk_get(&od->dev, "gpu_core_clk_mux");
++                hck = clk_get(&od->dev, "gpu_hyd_clk_mux");
++                pck = clk_get(&od->dev, "dpll_per_h14x2_ck");
++                clk_set_parent(cck, pck);
++                clk_set_parent(hck, pck);
++                clk_put(cck);
++                clk_put(hck);
++                clk_put(pck);
++        }
++
+ 	kfree(pdata);
+ }
+ 
+diff --git a/arch/arm/mach-omap2/display.c b/arch/arm/mach-omap2/display.c
+index bc531ea..9e2d7cb 100644
+--- a/arch/arm/mach-omap2/display.c
++++ b/arch/arm/mach-omap2/display.c
+@@ -239,10 +239,10 @@ int __init omap_display_init(struct omap_dss_board_info *board_data)
+ 	struct omap_hwmod *oh;
+ 	struct platform_device *pdev;
+ 	int i, oh_count;
+-	struct omap_display_platform_data pdata;
++	// struct omap_display_platform_data pdata;
+ 	const struct omap_dss_hwmod_data *curr_dss_hwmod;
+ 
+-	memset(&pdata, 0, sizeof(pdata));
++	// memset(&pdata, 0, sizeof(pdata));
+ 
+ 	if (cpu_is_omap24xx()) {
+ 		curr_dss_hwmod = omap2_dss_hwmod_data;
+@@ -263,8 +263,7 @@ int __init omap_display_init(struct omap_dss_board_info *board_data)
+ 	if (board_data->dsi_disable_pads == NULL)
+ 		board_data->dsi_disable_pads = omap_dsi_disable_pads;
+ 
+-	pdata.board_data = board_data;
+-	pdata.board_data->get_context_loss_count =
++	board_data->get_context_loss_count =
+ 		omap_pm_get_dev_context_loss_count;
+ 
+ 	for (i = 0; i < oh_count; i++) {
+@@ -276,8 +275,8 @@ int __init omap_display_init(struct omap_dss_board_info *board_data)
+ 		}
+ 
+ 		pdev = omap_device_build(curr_dss_hwmod[i].dev_name,
+-				curr_dss_hwmod[i].id, oh, &pdata,
+-				sizeof(struct omap_display_platform_data),
++				curr_dss_hwmod[i].id, oh,
++				NULL, 0, // &pdata, sizeof(struct omap_display_platform_data),
+ 				NULL, 0, 0);
+ 
+ 		if (WARN((IS_ERR(pdev)), "Could not build omap_device for %s\n",
+diff --git a/drivers/video/omap2/dss/dispc.c b/drivers/video/omap2/dss/dispc.c
+index 1b6890a3..be5f242 100644
+--- a/drivers/video/omap2/dss/dispc.c
++++ b/drivers/video/omap2/dss/dispc.c
+@@ -134,8 +134,8 @@ static inline u32 dispc_read_reg(const u16 idx)
+ static int dispc_get_ctx_loss_count(void)
+ {
+ 	struct device *dev = &dispc.pdev->dev;
+-	struct omap_display_platform_data *pdata = dev->platform_data;
+-	struct omap_dss_board_info *board_data = pdata->board_data;
++//	struct omap_display_platform_data *pdata = dev->platform_data;
++	struct omap_dss_board_info *board_data = dev->platform_data; // pdata->board_data;
+ 	int cnt;
+ 
+ 	if (!board_data->get_context_loss_count)
+diff --git a/fs/namespace.c b/fs/namespace.c
+index e608199..42c9174 100644
+--- a/fs/namespace.c
++++ b/fs/namespace.c
+@@ -1799,6 +1799,8 @@ do_kern_mount(const char *fstype, int flags, const char *name, void *data)
+ {
+ 	struct file_system_type *type = get_fs_type(fstype);
+ 	struct vfsmount *mnt;
++
++	printk("%s: type = %p (%s)\n", __func__, type, fstype);
+ 	if (!type)
+ 		return ERR_PTR(-ENODEV);
+ 	mnt = vfs_kern_mount(type, flags, name, data);

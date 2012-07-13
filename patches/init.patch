@@ -1,8 +1,51 @@
 Index: 5AI.1.12/mydroid/device/ti/omap5sevm/init.omap5sevmboard.rc
 ===================================================================
---- 5AI.1.12.orig/mydroid/device/ti/omap5sevm/init.omap5sevmboard.rc	2012-07-05 16:19:13.936259937 +0200
-+++ 5AI.1.12/mydroid/device/ti/omap5sevm/init.omap5sevmboard.rc	2012-07-05 17:08:55.606401494 +0200
-@@ -28,7 +28,6 @@
+--- 5AI.1.12.orig/mydroid/device/ti/omap5sevm/init.omap5sevmboard.rc	2012-07-05 17:20:33.455797812 +0200
++++ 5AI.1.12/mydroid/device/ti/omap5sevm/init.omap5sevmboard.rc	2012-07-06 12:26:24.387518164 +0200
+@@ -2,33 +2,33 @@
+ import init.modem.rc
+ 
+ on early-init
+-    export EXTERNAL_STORAGE /mnt/sdcard
+-    mkdir /mnt/sdcard 0000 system system
+-    # for backwards compatibility
+-    symlink /mnt/sdcard /sdcard
+-    chmod 0777 /mnt/sdcard
++	loglevel 8
++	export EXTERNAL_STORAGE /mnt/sdcard
++	mkdir /mnt/sdcard 0000 system system
++	# for backwards compatibility
++	symlink /mnt/sdcard /sdcard
++	chmod 0777 /mnt/sdcard
+ 
+ # create Ext SDcard mountpoint
+-    mkdir /mnt/ext_sdcard 0000 system system
++	mkdir /mnt/ext_sdcard 0000 system system
+ 
+ 
+ on post-fs-data
+-    # we will remap this as /mnt/sdcard with the sdcard fuse tool
+-    mkdir /data/media 0775 media_rw media_rw
+-    chown media_rw media_rw /data/media
+-    mkdir /data/smc 0770 drmrpc drmrpc
+-    chmod 0777 /mnt/sdcard/Android/data/com.android.gallery3d/cache
++	# we will remap this as /mnt/sdcard with the sdcard fuse tool
++	mkdir /data/media 0775 media_rw media_rw
++	chown media_rw media_rw /data/media
++	mkdir /data/smc 0770 drmrpc drmrpc
++	chmod 0777 /mnt/sdcard/Android/data/com.android.gallery3d/cache
+ 
+ #insert bluetooth modules
+-    insmod /system/lib/modules/bluetooth.ko force_acl_master=1 enable_mgmt=1 enable_le=1
+-    insmod /system/lib/modules/rfcomm.ko
+-    insmod /system/lib/modules/hidp.ko
+-    insmod /system/lib/modules/bnep.ko
+-    insmod /system/lib/modules/btwilink.ko
++	insmod /system/lib/modules/bluetooth.ko force_acl_master=1 enable_mgmt=1 enable_le=1
++	insmod /system/lib/modules/rfcomm.ko
++	insmod /system/lib/modules/hidp.ko
++	insmod /system/lib/modules/bnep.ko
++	insmod /system/lib/modules/btwilink.ko
  
  on boot
  	mount debugfs /sys/kernel/debug /sys/kernel/debug
@@ -10,7 +53,13 @@ Index: 5AI.1.12/mydroid/device/ti/omap5sevm/init.omap5sevmboard.rc
  	chmod 0444 /system/usr/keychars/omap4-keypad.kcm.bin
  
  # Power Management
-@@ -50,11 +49,13 @@
+@@ -45,35 +45,37 @@
+ 	insmod /system/lib/modules/wl18xx.ko board_type=com8
+ 
+ # GPS
+-        insmod /system/lib/modules/gps_drv.ko
++	insmod /system/lib/modules/gps_drv.ko
+ 
  on fs
  	mkdir /factory 0775 radio radio
  	symlink /dev/block/platform /dev/block/platform/omap
@@ -23,9 +72,151 @@ Index: 5AI.1.12/mydroid/device/ti/omap5sevm/init.omap5sevmboard.rc
 +	mount ext4 /dev/block/mmcblk1p7 /data wait noatime nosuid nodev nomblk_io_submit
 +	mount ext4 /dev/block/mmbclk1p8 /cache wait noatime nosuid nodev nomblk_io_submit
 +	mount ext4 /dev/block/mmcblk1p9 /factory wait ro
-+        insmod /vendor/lib/modules/pvrsrvkm_sgx544_105.ko
-+        insmod /vendor/lib/modules/omaplfb_sgx544_105.ko
++	insmod /vendor/lib/modules/pvrsrvkm_sgx544_105.ko
++	insmod /vendor/lib/modules/omaplfb_sgx544_105.ko
 +	chmod 0666 /dev/pvrsrvkm
  
  # change permissions for ION driver
-     chmod 0777 /dev/ion
+-    chmod 0777 /dev/ion
++	chmod 0777 /dev/ion
+ 
+ # change permissions for Bluetooth/FM/GPS
+-    chmod 0660 /dev/ttyO4
+-    chown bluetooth bluetooth /dev/ttyO4
++	chmod 0660 /dev/ttyO4
++	chown bluetooth bluetooth /dev/ttyO4
+ 
+ # change permissions for Sensors
+-    chown system system /sys/bus/i2c/drivers/mpu6050/2-0068
+-    chown system system /sys/bus/i2c/drivers/mpu6050/2-0068/accel_enable
+-    chown system system /sys/bus/i2c/drivers/bmp085/2-0077
+-    chown system system /sys/bus/i2c/drivers/bmp085/2-0077/enable
+-    chown system system /sys/bus/i2c/drivers/tsl2771/2-0039
+-    chown system system /sys/bus/i2c/drivers/tsl2771/2-0039/als_enable
+-    chown system system /sys/bus/i2c/drivers/tsl2771/2-0039/prox_enable
++	chown system system /sys/bus/i2c/drivers/mpu6050/2-0068
++	chown system system /sys/bus/i2c/drivers/mpu6050/2-0068/accel_enable
++	chown system system /sys/bus/i2c/drivers/bmp085/2-0077
++	chown system system /sys/bus/i2c/drivers/bmp085/2-0077/enable
++	chown system system /sys/bus/i2c/drivers/tsl2771/2-0039
++	chown system system /sys/bus/i2c/drivers/tsl2771/2-0039/als_enable
++	chown system system /sys/bus/i2c/drivers/tsl2771/2-0039/prox_enable
+ 
+ # change permissions for display backlight
+-    chown system system /sys/class/backlight/lg4591/brightness
++	chown system system /sys/class/backlight/lg4591/brightness
+ 
+ service pvrsrvinit /vendor/bin/pvrsrvinit
+ 	class core
+@@ -83,14 +85,13 @@
+ 
+ #shared transport user space mgr service for Bluetooth, FM and GPS
+ service uim /system/bin/uim-sysfs
+-         class core
+-         user root
+-         group bluetooth net_bt_admin
++	 class core
++	 user root
++	 group bluetooth net_bt_admin
+ 
+ # create filesystems if necessary
+ service setup_fs /system/bin/setup_fs \
+-	/dev/block/platform/omap/omap_hsmmc.1/by-name/cache \
+-	/dev/block/platform/omap/omap_hsmmc.1/by-name/userdata
++	/dev/block/mmcblk1p7 /dev/block/mmcblk1p8
+ 	class core
+ 	user root
+ 	group root
+@@ -100,7 +101,7 @@
+ # daemon will drop to user/group system/media_rw after initializing
+ # underlying files in /data/media will be created with user and group media_rw (1023)
+ service sdcard /system/bin/sdcard /data/media 1023 1023
+-    class late_start
++	class late_start
+ 
+ # bugreport is triggered by holding down volume down, volume up, and power
+ service bugreport /system/bin/bugmailer.sh -v
+@@ -141,14 +142,14 @@
+ 	oneshot
+ 
+ service dhcpcd_bnep0 /system/bin/dhcpcd -ABKL
+-        class main
+-        disabled
+-        oneshot
++	class main
++	disabled
++	oneshot
+ 
+ service iprenew_bnep0 /system/bin/dhcpcd -n
+-        class main
+-        disabled
+-        oneshot
++	class main
++	disabled
++	oneshot
+ 
+ service hostapd_bin /system/bin/hostapd -d /data/misc/wifi/hostapd.conf
+ 	socket wpa_wlan1 dgram 660 wifi wifi
+@@ -158,20 +159,20 @@
+ 
+ # Class 'core' to run the detection before 'media' is started
+ service modem-detect /system/vendor/bin/modem-detect.sh
+-    class core
+-    user root
+-    group root
+-    oneshot
++	class core
++	user root
++	group root
++	oneshot
+ 
+ on property:wlan.driver.status=ok
+-    chown wifi wifi /sys/devices/platform/wl1271/bt_coex_state
++	chown wifi wifi /sys/devices/platform/wl1271/bt_coex_state
+ 
+ service devproxy /system/bin/devproxy
+-        class main
+-        disabled
+-        oneshot
++	class main
++	disabled
++	oneshot
+ 
+ service agnss_connect /system/bin/agnss_connect -p
+-        class main
+-        disabled
+-        oneshot
++	class main
++	disabled
++	oneshot
+Index: 5AI.1.12/mydroid/system/core/rootdir/init.rc
+===================================================================
+--- 5AI.1.12.orig/mydroid/system/core/rootdir/init.rc	2012-07-05 17:22:22.735011601 +0200
++++ 5AI.1.12/mydroid/system/core/rootdir/init.rc	2012-07-06 12:26:11.440081471 +0200
+@@ -11,7 +11,7 @@
+ 
+ sysclktz 0
+ 
+-loglevel 3
++loglevel 8
+ 
+ # setup the global environment
+     export PATH /sbin:/vendor/bin:/system/sbin:/system/bin:/system/xbin
+@@ -102,7 +102,7 @@
+ 
+ on post-fs
+     # once everything is setup, no need to modify /
+-    mount rootfs rootfs / ro remount
++    mount rootfs rootfs / rw remount
+ 
+     # We chown/chmod /cache again so because mount is run as root + defaults
+     chown system cache /cache
+@@ -347,7 +347,7 @@
+     class core
+     console
+     disabled
+-    user shell
++    user root
+     group log
+ 
+ on property:ro.debuggable=1
